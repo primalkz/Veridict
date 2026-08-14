@@ -1,10 +1,14 @@
-import './App.css'
+import Navbar from './components/Navbar'
+import { Routes, Route } from 'react-router-dom'
 
 function App() {
   return (
-    <div className="app">
-      <h1>veridict</h1>
-    </div>
+    <>
+      <Navbar />
+      <Routes>
+        <Route path='/chat' element={<h1>Chat</h1>} />
+      </Routes>
+    </>
   )
 }
 
