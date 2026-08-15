@@ -1,12 +1,17 @@
+import { useState } from 'react';
 import Navbar from './components/Navbar'
 import { Routes, Route } from 'react-router-dom'
+import Chat from './components/Chat'
 
 function App() {
+
+  const [isOpen, setIsOpen] = useState(true);
+
   return (
     <>
-      <Navbar />
+      <Navbar isOpen={isOpen} setIsOpen={setIsOpen} />
       <Routes>
-        <Route path='/chat' element={<h1>Chat</h1>} />
+        <Route path='/chat' element={<Chat isOpen={isOpen} setIsOpen={setIsOpen} />} />
       </Routes>
     </>
   )
