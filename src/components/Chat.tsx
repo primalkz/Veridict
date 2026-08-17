@@ -8,6 +8,9 @@ export default function Chat({isOpen, setIsOpen}) {
         <main className={isOpen ? "chatScreen" : "chatScreen sidebar-collapsed"}>
         <Sidebar isOpen={isOpen} setIsOpen={setIsOpen}/>
         <section className="chatContent">
+            {/* <h2>
+                Debate with evidence!
+            </h2> */}
             <section className="messaging">
                 <article className="prompt">
                     How are you?
@@ -36,7 +39,47 @@ export default function Chat({isOpen, setIsOpen}) {
                     ansdnann ji djijc scij jicjidc  jijjj dcjdjs  jsid is  nidjd djcdasbbd as dbasub doasdasdasdasd
                     asidjasidjas aksodasd aksodkasodkaos 
                     asidja oasjodjaj iji jiasjidj in naisdjieh nin cas iasnci j  nin cdjcd 
+                    ansdnann ji djijc scij jicjidc  jijjj dcjdjs  jsid is  nidjd djcdasbbd as dbasub doasdasdasdasd
+                    asidjasidjas aksodasd aksodkasodkaos 
+                    asidja oasjodjaj iji jiasjidj in naisdjieh nin cas iasnci j  nin cdjcd 
+                    ansdnann ji djijc scij jicjidc  jijjj dcjdjs  jsid is  nidjd djcdasbbd as dbasub doasdasdasdasd
+                    asidjasidjas aksodasd aksodkasodkaos 
+                    asidja oasjodjaj iji jiasjidj in naisdjieh nin cas iasnci j  nin cdjcd 
+                    ansdnann ji djijc scij jicjidc  jijjj dcjdjs  jsid is  nidjd djcdasbbd as dbasub doasdasdasdasd
+                    asidjasidjas aksodasd aksodkasodkaos 
+                    asidja oasjodjaj iji jiasjidj in naisdjieh nin cas iasnci j  nin cdjcd 
+                    ansdnann ji djijc scij jicjidc  jijjj dcjdjs  jsid is  nidjd djcd 
+                </article>
+                <article className="prompt">
+                    WHAT IS UP?WHAT IS UP?WHAT IS UP?WHAT IS UP?
+                </article>
+                <article className="reply">
+                    asbbd as dbasub doasdasdasdasd
+                    asidjasidjas aksodasd aksodkasodkaos 
+                    asidja oasjodjaj iji jiasjidj in naisdjieh nin cas iasnci j  nin cdjcd 
                     ansdnann ji djijc scij jicjidc  jijjj dcjdjs  jsid is  nidjd djcd
+                    asbbd as dbasub doasdasdasdasd
+                    asidjasidjas aksodasd aksodkasodkaos 
+                    asidja oasjodjaj iji jiasjidj in naisdjieh nin cas iasnci j  nin cdjcd 
+                    ansdnann ji djijc scij jicjidc  jijjj dcjdjs  jsid is  nidjd djcdasbbd as dbasub doasdasdasdasd
+                    asidjasidjas aksodasd aksodkasodkaos 
+                    asidja oasjodjaj iji jiasjidj in naisdjieh nin cas iasnci j  nin cdjcd 
+                    ansdnann ji djijc scij jicjidc  jijjj dcjdjs  jsid is  nidjd djcdasbbd as dbasub doasdasdasdasd
+                    asidjasidjas aksodasd aksodkasodkaos 
+                    asidja oasjodjaj iji jiasjidj in naisdjieh nin cas iasnci j  nin cdjcd 
+                    ansdnann ji djijc scij jicjidc  jijjj dcjdjs  jsid is  nidjd djcdasbbd as dbasub doasdasdasdasd
+                    asidjasidjas aksodasd aksodkasodkaos 
+                    asidja oasjodjaj iji jiasjidj in naisdjieh nin cas iasnci j  nin cdjcd 
+                    ansdnann ji djijc scij jicjidc  jijjj dcjdjs  jsid is  nidjd djcdasbbd as dbasub doasdasdasdasd
+                    asidjasidjas aksodasd aksodkasodkaos 
+                    asidja oasjodjaj iji jiasjidj in naisdjieh nin cas iasnci j  nin cdjcd 
+                    ansdnann ji djijc scij jicjidc  jijjj dcjdjs  jsid is  nidjd djcdasbbd as dbasub doasdasdasdasd
+                    asidjasidjas aksodasd aksodkasodkaos 
+                    asidja oasjodjaj iji jiasjidj in naisdjieh nin cas iasnci j  nin cdjcd 
+                    ansdnann ji djijc scij jicjidc  jijjj dcjdjs  jsid is  nidjd djcdasbbd as dbasub doasdasdasdasd
+                    asidjasidjas aksodasd aksodkasodkaos 
+                    asidja oasjodjaj iji jiasjidj in naisdjieh nin cas iasnci j  nin cdjcd 
+                    ansdnann ji djijc scij jicjidc  jijjj dcjdjs  jsid is  nidjd djcd 
                 </article>
             </section>
             <form className="inputBox">
