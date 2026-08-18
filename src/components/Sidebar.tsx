@@ -1,35 +1,41 @@
 import { useEffect, useState, type ElementType } from 'react'
 import '../css/sidebar.css'
 import { ClockCounterClockwise, ChatTeardropText, MagnifyingGlass } from "@phosphor-icons/react";
+import { useNavigate } from 'react-router-dom';
 
 type Props = { isOpen: boolean, setIsOpen: (value: boolean) => void };
 
 const History = () => {
+    const oldconvos = localStorage.getItem('conversation');
+    const convos = JSON.parse(oldconvos);
     type History = {
         id: string;
         title: string;
     }
-    const historyItems: History[] = [
-        { id: "1", title: "Build an AI chat interface" },
-        { id: "2", title: "Fix React hydration error" },
-        { id: "3", title: "Create a dark mode theme" },
-        { id: "4", title: "Explain TypeScript generics" },
-        { id: "5", title: "Build a streaming LLM response" },
-        { id: "6", title: "Improve API error handling" },
-        { id: "7", title: "Create a responsive sidebar" },
-        { id: "8", title: "How does RAG work?" },
-        { id: "9", title: "Write a PostgreSQL query" },
-        { id: "10", title: "Compare GPT and Claude" },
-        { id: "11", title: "Build a markdown renderer" },
-        { id: "12", title: "Optimize React performance" },
-    ]
+
+    const historyItems: History[] = [];
+
+    const keys = Object.keys(convos);
+    for(let i = 0; i < keys.length; i++){
+        const item = {
+            id: keys[i],
+            title:  convos[keys[i]][0].content
+        }
+        historyItems.push(item);
+    }
+
+    const navigate = useNavigate();
+
+    const openChat = (key: string) => {
+        navigate(`/chat/${key}`);
+    }
 
     return (
         <>
             {
             historyItems.map(item => {
                 return (
-                <li key={item.id} title={item.title}>{item.title}</li>
+                <li className='historyItem' onClick={() => openChat(item.id)} key={item.id} title={item.title}>{item.title}</li>
             )})
             }
         </>       
@@ -39,10 +45,15 @@ const History = () => {
 export default function Sidebar ({isOpen, setIsOpen}: Props) {
     
     const [history, selectHistory] = useState(false);
+    const [searchActive, setSearchActive] = useState(false);
+    const navigate = useNavigate();
     const toggleHistory = () => {
         !history && setIsOpen(true);
         selectHistory(!history);
     }   
+    const newChat = () => {
+        navigate("/chat/");
+    }
     
     type Menu = {
         name: string;
@@ -55,11 +66,13 @@ export default function Sidebar ({isOpen, setIsOpen}: Props) {
             name: "New Chat",
             desc: "Start a new conversation",
             icon: ChatTeardropText,
+            func: newChat,
         },
         {
             name: "Search",
             desc: "Search through your conversations",
             icon: MagnifyingGlass,
+            func: () => setSearchActive(!searchActive)
         },
         {
             name: "History",
@@ -68,6 +81,16 @@ export default function Sidebar ({isOpen, setIsOpen}: Props) {
             func: toggleHistory,
         },
     ];
+
+    const search = (query : string) => {
+        selectHistory(true);
+        const items = document.querySelectorAll('.historyItem');
+        const result = Array.from(items).forEach(item => {
+            const matches = item.textContent.toLowerCase().includes(query.toLowerCase());
+            (item as HTMLElement).style.display = matches ? '' : 'none';
+        }
+        );
+    }
 
     useEffect(() => {
         !isOpen && selectHistory(false);
@@ -87,6 +110,9 @@ export default function Sidebar ({isOpen, setIsOpen}: Props) {
                         <span className='sidebar-item-name'>{item.name}</span>
                         </li>
                     )})
+                    }
+                    { searchActive &&
+                    (<input type="text" onChange={(e) => {search(e.target.value)}} placeholder='Find your chat' className='searchBox'/>)
                     }
                     { history &&
                         <History/>
