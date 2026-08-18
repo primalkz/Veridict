@@ -4,13 +4,36 @@ import { ArrowUp } from "@phosphor-icons/react";
 import OpenAI from 'openai';
 import { useEffect, useRef, useState } from "react";
 import Markdown from 'react-markdown'
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function Chat({isOpen, setIsOpen}: {isOpen: boolean, setIsOpen: (value: boolean) => void}) {
 
     const [userInput, setUserInput] = useState("");
-    const [messages, setMessages] = useState<any[]>([]);
     const inputRef = useRef<HTMLInputElement>(null);
     const chatRef = useRef(null);
+
+    const { uuid } = useParams();
+    const navigate = useNavigate();
+
+    const oldconvos = localStorage.getItem("conversation");
+    // console.log("CONVO: ", oldconvos)
+    
+    const[conversation, setConversation] = useState(() => {
+        if (oldconvos) {
+            return JSON.parse(oldconvos);
+        }
+        return {};
+    });
+
+    const [messages, setMessages] = useState<any[]>(() => {
+        const uuid = window.location.pathname.split('/').pop();
+
+        if (!uuid) return [];
+
+        const convos = oldconvos ? JSON.parse(oldconvos) : {};
+
+        return convos[uuid] || []; 
+    });
 
     const client = new OpenAI({
         apiKey: import.meta.env.VITE_GROQ_API_KEY,
@@ -18,8 +41,25 @@ export default function Chat({isOpen, setIsOpen}: {isOpen: boolean, setIsOpen: (
         dangerouslyAllowBrowser: true
     });
 
+    function createConvo() {
+        const uuid = window.location.pathname.split('/').pop();
+        if (uuid && uuid !== "chat") return;
+        
+        const uniqueId = crypto.randomUUID();
+        navigate(`/chat/${uniqueId}`);
+        
+        setConversation(prev => ({
+            ...prev,
+            [uniqueId] : messages
+        }))
+    }
+
     async function askLLM(e: { preventDefault: () => void }) {
         e.preventDefault();
+
+        if(messages.length===0){
+            createConvo()
+        }
 
         if (!userInput.trim() || userInput.trim().toLowerCase() === "stop") return;
 
@@ -37,7 +77,20 @@ export default function Chat({isOpen, setIsOpen}: {isOpen: boolean, setIsOpen: (
             input: newMessages,
         });
 
+        // console.log(JSON.stringify(newMessages).length)
+        // console.log(newMessages);
+        // console.log(response);
+
         setMessages([...newMessages, ...response.output]);
+
+        const uuid = window.location.pathname.split('/').pop();
+        
+        if (!uuid) return;
+        
+        setConversation(prev => ({
+            ...prev,
+            [uuid]: [...newMessages, ...response.output]
+        }));
     }
 
     useEffect(() => {
@@ -46,6 +99,23 @@ export default function Chat({isOpen, setIsOpen}: {isOpen: boolean, setIsOpen: (
             behavior: "smooth",
         })
     }, [messages])
+
+    useEffect(() => {
+        localStorage.setItem( 'conversation', JSON.stringify(conversation) );
+    }, [conversation]);
+
+    useEffect(() => {
+        if (!uuid) {
+            setMessages([]);
+            return;
+        }
+
+        const convos = JSON.parse(
+            localStorage.getItem("conversation") || "{}"
+        );
+
+        setMessages(convos[uuid] || []);
+    }, [uuid])
 
     return (
         <>

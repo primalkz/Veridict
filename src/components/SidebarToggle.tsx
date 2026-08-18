@@ -10,7 +10,7 @@ export default function SidebarToggle ({isOpen, setIsOpen}) {
 
     return (
         <>
-        { location.pathname === "/chat" && 
+        { location.pathname.startsWith("/chat") && 
         <button onClick={toggleSidebar} className="menu" aria-label="Open menu">
             {!isOpen ? 
             (<SidebarSimpleIcon size={22} />)

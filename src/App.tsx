@@ -5,7 +5,7 @@ import Chat from './components/Chat'
 
 function App() {
 
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-color-scheme: light)');
@@ -25,6 +25,7 @@ function App() {
       <Navbar isOpen={isOpen} setIsOpen={setIsOpen} />
       <Routes>
         <Route path='/chat' element={<Chat isOpen={isOpen} setIsOpen={setIsOpen} />} />
+        <Route path="/chat/:uuid" element={<Chat isOpen={isOpen} setIsOpen={setIsOpen} />} />
       </Routes>
     </>
   )
