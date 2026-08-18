@@ -1,6 +1,6 @@
 .sidebar {
     width: 240px;
-    height: calc(100vh - 80px);
+    height: calc(100vh - 72px);
     z-index: 999;
     padding: 0.8em;
     
@@ -45,7 +45,7 @@ section {
     scrollbar-width: none;
 }
 
-ul {
+.sidebar ul {
     margin: 0;
     padding: 0;
     gap: 10px;
@@ -54,7 +54,7 @@ ul {
     flex-direction: column;
 }
 
-ul > li {
+.sidebar ul > li {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -74,13 +74,13 @@ ul > li {
 	transition: all 0.4s ease-out;
 }
 
-ul > li svg {
+.sidebar ul > li svg {
     flex-shrink: 0;
     width: 28px;
     height: 28px;
 }
 
-ul > li:hover {
+.sidebar ul > li:hover {
 	transition-duration: 0.25s;
     background: color-mix(in srgb, var(--bg-2) 36%, transparent);
     border-color: color-mix(in srgb, var(--text-main) 14%, transparent);
@@ -93,39 +93,39 @@ ul > li:hover {
         brightness(108%);
 }
 
-ul > li:active {
+.sidebar ul > li:active {
 	transform: scale(0.95);
 	opacity: 0.85;
 }
 
-li svg {
+.sidebar li svg {
     padding: 4px;
     border: 1px solid color-mix(in srgb, var(--text-main) 16%, transparent);
     border-radius: 6px;
     background-color: color-mix(in srgb, var(--bg-2) 68%, transparent);
 }
 
-ul > li:nth-child(1) {
+.sidebar ul > li:nth-child(1) {
     color: var(--accent-yellow);
 }
 
-ul > li:nth-child(2) {
+.sidebar ul > li:nth-child(2) {
     color: var(--accent-blue);
 }
 
-ul > li:nth-child(3) {
+.sidebar ul > li:nth-child(3) {
     color: var(--accent-magenta);
 }
 
-ul > li:nth-child(1) svg {
+.sidebar ul > li:nth-child(1) svg {
     background-color: color-mix(in srgb, var(--accent-yellow) 16%, var(--bg-2));
 }
 
-ul > li:nth-child(2) svg {
+.sidebar ul > li:nth-child(2) svg {
     background-color: color-mix(in srgb, var(--accent-blue) 16%, var(--bg-2));
 }
 
-ul > li:nth-child(3) svg {
+.sidebar ul > li:nth-child(3) svg {
     background-color: color-mix(in srgb, var(--accent-magenta) 16%, var(--bg-2));
 }
 
