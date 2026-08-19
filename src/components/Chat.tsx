@@ -4,6 +4,7 @@ import { ArrowUp } from "@phosphor-icons/react";
 import OpenAI from 'openai';
 import { useEffect, useRef, useState } from "react";
 import Markdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function Chat({isOpen, setIsOpen}: {isOpen: boolean, setIsOpen: (value: boolean) => void}) {
@@ -41,7 +42,7 @@ export default function Chat({isOpen, setIsOpen}: {isOpen: boolean, setIsOpen: (
         dangerouslyAllowBrowser: true
     });
 
-    function createConvo() {
+    function createConvo(newMessages) {
         const uuid = window.location.pathname.split('/').pop();
         if (uuid && uuid !== "chat") return;
         
@@ -50,25 +51,26 @@ export default function Chat({isOpen, setIsOpen}: {isOpen: boolean, setIsOpen: (
         
         setConversation(prev => ({
             ...prev,
-            [uniqueId] : messages
+            [uniqueId] : newMessages
         }))
     }
 
     async function askLLM(e: { preventDefault: () => void }) {
         e.preventDefault();
 
-        if(messages.length===0){
-            createConvo()
-        }
-
         if (!userInput.trim() || userInput.trim().toLowerCase() === "stop") return;
-
+        
         const newMessages = [
             ...messages,
             { role: "user", content: userInput },
         ];
-
+        
         setMessages(newMessages);
+
+        if(messages.length===0){
+            createConvo(newMessages)
+        }
+
         setUserInput("");
         inputRef.current?.focus();
 
@@ -138,13 +140,13 @@ export default function Chat({isOpen, setIsOpen}: {isOpen: boolean, setIsOpen: (
                     }
 
                     if (message.type === "reasoning") {
-                        const reason = message.content ?.filter((item: any) => item.type === "reasoning_text").map((item: any) => item.text).join("");
+                        const reason = message.content ?.filter((item: any) => item.type === "reasoning_text").map((item: any) => item.text).join("\n");
                         return (
                             <article className="reasoning" key={index}>
                                 <details>
                                     <summary>Thinking</summary>
                                     <p>
-                                    <Markdown>
+                                    <Markdown remarkPlugins={remarkGfm}>
                                         {reason}
                                     </Markdown>
                                     </p>
@@ -154,10 +156,10 @@ export default function Chat({isOpen, setIsOpen}: {isOpen: boolean, setIsOpen: (
                     }
 
                     if(message.type === "message" && message.role === "assistant") {
-                        const text = message.content ?.filter((item: any) => item.type === "output_text").map((item: any) => item.text).join("")
+                        const text = message.content ?.filter((item: any) => item.type === "output_text").map((item: any) => item.text).join("\n")
                         return (
                             <article className="reply" key={index}>
-                                <Markdown>
+                                <Markdown remarkPlugins={remarkGfm}>
                                 {text}
                                 </Markdown>
                             </article>

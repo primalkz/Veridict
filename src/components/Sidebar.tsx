@@ -16,11 +16,12 @@ const History = () => {
     const historyItems: History[] = [];
 
     const keys = Object.keys(convos);
-    for(let i = 0; i < keys.length; i++){
+    for(let i = keys.length - 1; i >= 0; i--){
         const item = {
             id: keys[i],
-            title:  convos[keys[i]][0].content
+            title:  convos[keys[i]][0]?.content ?? 'No Title'
         }
+
         historyItems.push(item);
     }
 
@@ -72,7 +73,7 @@ export default function Sidebar ({isOpen, setIsOpen}: Props) {
             name: "Search",
             desc: "Search through your conversations",
             icon: MagnifyingGlass,
-            func: () => setSearchActive(!searchActive)
+            func: () => { setSearchActive(!searchActive); !searchActive && setIsOpen(true);}
         },
         {
             name: "History",
@@ -94,6 +95,7 @@ export default function Sidebar ({isOpen, setIsOpen}: Props) {
 
     useEffect(() => {
         !isOpen && selectHistory(false);
+        !isOpen && setSearchActive(false);
     }, [isOpen])
 
     return (

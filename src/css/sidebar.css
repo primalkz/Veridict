@@ -118,15 +118,15 @@ section {
 }
 
 .sidebar ul > li:nth-child(1) svg {
-    background-color: color-mix(in srgb, var(--accent-yellow) 16%, var(--bg-2));
+    background-color: color-mix(in srgb, var(--accent-yellow) 10%, var(--bg-2));
 }
 
 .sidebar ul > li:nth-child(2) svg {
-    background-color: color-mix(in srgb, var(--accent-blue) 16%, var(--bg-2));
+    background-color: color-mix(in srgb, var(--accent-blue) 10%, var(--bg-2));
 }
 
 .sidebar ul > li:nth-child(3) svg {
-    background-color: color-mix(in srgb, var(--accent-magenta) 16%, var(--bg-2));
+    background-color: color-mix(in srgb, var(--accent-magenta) 10%, var(--bg-2));
 }
 
 .menu {
