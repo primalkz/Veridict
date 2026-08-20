@@ -1,17 +1,11 @@
 import Sidebar from "./Sidebar"
 import "../css/chat.css"
-import { ArrowUp } from "@phosphor-icons/react";
+import { ArrowUp, Gear } from "@phosphor-icons/react";
 import OpenAI from 'openai';
-import { type FormEvent, useEffect, useRef, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { useNavigate, useParams } from "react-router-dom";
-
-const client = new OpenAI({
-  apiKey: import.meta.env.VITE_GROQ_API_KEY,
-  baseURL: "https://api.groq.com/openai/v1",
-  dangerouslyAllowBrowser: true,
-})
 
 const SUGGESTIONS = [
   "AI will create more jobs than it destroys.",
@@ -23,11 +17,31 @@ export default function Chat({isOpen, setIsOpen}: {isOpen: boolean, setIsOpen: (
 
     const [userInput, setUserInput] = useState("");
     const [pending, setPending] = useState(false);
+    const [apiKey, setApiKey] = useState(() => localStorage.getItem("openai_api_key") || "");
+    const [baseURL, setBaseURL] = useState(() => localStorage.getItem("openai_base_url") || "https://api.groq.com/openai/v1");
+    const [showSettings, setShowSettings] = useState(() => !localStorage.getItem("openai_api_key"));
     const inputRef = useRef<HTMLInputElement>(null);
     const chatRef = useRef<HTMLElement>(null);
 
     const { uuid } = useParams();
     const navigate = useNavigate();
+
+    const client = useMemo(() => apiKey ? new OpenAI({
+        apiKey,
+        baseURL,
+        dangerouslyAllowBrowser: true,
+    }) : null, [apiKey, baseURL]);
+
+    function saveSettings(key: string, url: string) {
+        const trimmedKey = key.trim()
+        const trimmedURL = url.trim()
+        if (!trimmedKey || !trimmedURL) return
+        localStorage.setItem("openai_api_key", trimmedKey)
+        localStorage.setItem("openai_base_url", trimmedURL)
+        setApiKey(trimmedKey)
+        setBaseURL(trimmedURL)
+        setShowSettings(false)
+    }
 
     const [conversation, setConversation] = useState<Record<string, any[]>>(() => {
         try {
@@ -51,6 +65,8 @@ export default function Chat({isOpen, setIsOpen}: {isOpen: boolean, setIsOpen: (
 
     async function askLLM(e: FormEvent) {
         e.preventDefault();
+
+        if (!client) return;
 
         const trimmed = userInput.trim()
         if (!trimmed || trimmed.toLowerCase() === "stop") return;
@@ -116,7 +132,37 @@ export default function Chat({isOpen, setIsOpen}: {isOpen: boolean, setIsOpen: (
         <main className={isOpen ? "chatScreen" : "chatScreen sidebar-collapsed"}>
         <Sidebar isOpen={isOpen} setIsOpen={setIsOpen}/>
         <section className="chatContent">
-            {messages.length === 0 ? (
+            {showSettings ? (
+                <div className="chatHero">
+                    <h1 className="chatHero-title">Settings</h1>
+                    <p className="chatHero-sub">Add your API key to start chatting</p>
+                    <form className="settingsForm" onSubmit={(e) => {
+                        e.preventDefault()
+                        const form = e.currentTarget
+                        const key = (form.elements.namedItem('apiKey') as HTMLInputElement).value
+                        const url = (form.elements.namedItem('baseURL') as HTMLInputElement).value
+                        saveSettings(key, url)
+                    }}>
+                        <input
+                            name="apiKey"
+                            type="password"
+                            placeholder="sk-..."
+                            defaultValue={apiKey}
+                            aria-label="API key"
+                            required
+                        />
+                        <input
+                            name="baseURL"
+                            type="url"
+                            placeholder="https://api.openai.com/v1"
+                            defaultValue={baseURL}
+                            aria-label="Base URL"
+                            required
+                        />
+                        <button type="submit" className="settingsSave">Save</button>
+                    </form>
+                </div>
+            ) : messages.length === 0 ? (
                 <div className="chatHero">
                     <h1 className="chatHero-title">Debate with evidence.</h1>
                     <p className="chatHero-sub">Follow the evidence, not the argument.</p>
@@ -183,6 +229,14 @@ export default function Chat({isOpen, setIsOpen}: {isOpen: boolean, setIsOpen: (
                 </section>
             )}
             <form className="inputBox" onSubmit={askLLM}>
+                <button
+                    type="button"
+                    className="settingsToggle"
+                    onClick={() => setShowSettings(() => client ? !showSettings : true)}
+                    aria-label="Open settings"
+                >
+                    <Gear size={22} weight="bold" />
+                </button>
                 <input
                     ref={inputRef}
                     name="prompt"
@@ -192,8 +246,9 @@ export default function Chat({isOpen, setIsOpen}: {isOpen: boolean, setIsOpen: (
                     onChange={(e) => setUserInput(e.target.value)}
                     enterKeyHint="send"
                     aria-label="Message Veridict"
+                    disabled={!client}
                 />
-                <button type="submit" aria-label="Send message" disabled={pending}>
+                <button type="submit" aria-label="Send message" disabled={pending || !client}>
                     <ArrowUp size={20} weight="bold" />
                 </button>
             </form>
