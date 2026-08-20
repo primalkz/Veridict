@@ -1,126 +1,118 @@
 import { useEffect, useState, type ElementType } from 'react'
 import '../css/sidebar.css'
-import { ClockCounterClockwise, ChatTeardropText, MagnifyingGlass } from "@phosphor-icons/react";
-import { useNavigate } from 'react-router-dom';
+import { ClockCounterClockwise, ChatTeardropText } from "@phosphor-icons/react";
+import { useNavigate, useParams } from 'react-router-dom';
 
 type Props = { isOpen: boolean, setIsOpen: (value: boolean) => void };
 
-const History = () => {
-    const oldconvos = localStorage.getItem('conversation');
-    const convos = JSON.parse(oldconvos);
-    type History = {
-        id: string;
-        title: string;
-    }
+type Convo = { id: string, title: string }
 
-    const historyItems: History[] = [];
+function loadHistory(): Convo[] {
+  try {
+    const raw = localStorage.getItem('conversation')
+    const convos = raw ? JSON.parse(raw) : {}
+    return Object.keys(convos)
+      .reverse()
+      .map(id => ({ id, title: convos[id]?.[0]?.content ?? 'No title' }))
+  } catch {
+    return []
+  }
+}
 
-    const keys = Object.keys(convos);
-    for(let i = keys.length - 1; i >= 0; i--){
-        const item = {
-            id: keys[i],
-            title:  convos[keys[i]][0]?.content ?? 'No Title'
-        }
+function History() {
+  const { uuid } = useParams()
+  const navigate = useNavigate()
+  const [query, setQuery] = useState('')
 
-        historyItems.push(item);
-    }
+  const items = loadHistory()
+  const filtered = items.filter(c => c.title.toLowerCase().includes(query.toLowerCase()))
 
-    const navigate = useNavigate();
+  return (
+    <div className="sidebarHistory">
+      <input
+        type="text"
+        value={query}
+        onChange={e => setQuery(e.target.value)}
+        placeholder="find your chat"
+        className="searchBox"
+        aria-label="Search conversations"
+      />
+      {items.length === 0 ? (
+        <p className="historyEmpty">no conversations yet</p>
+      ) : filtered.length === 0 ? (
+        <p className="historyEmpty">no matches</p>
+      ) : (
+        filtered.map(item => (
+          <button
+            key={item.id}
+            className="historyItem"
+            onClick={() => navigate(`/chat/${item.id}`)}
+            title={item.title}
+            aria-current={uuid === item.id ? 'page' : undefined}
+          >
+            {item.title}
+          </button>
+        ))
+      )}
+    </div>
+  )
+}
 
-    const openChat = (key: string) => {
-        navigate(`/chat/${key}`);
-    }
-
-    return (
-        <>
-            {
-            historyItems.map(item => {
-                return (
-                <li className='historyItem' onClick={() => openChat(item.id)} key={item.id} title={item.title}>{item.title}</li>
-            )})
-            }
-        </>       
-    )
+type MenuItem = {
+  name: string
+  desc: string
+  icon: ElementType
+  func: () => void
 }
 
 export default function Sidebar ({isOpen, setIsOpen}: Props) {
-    
-    const [history, selectHistory] = useState(false);
-    const [searchActive, setSearchActive] = useState(false);
-    const navigate = useNavigate();
-    const toggleHistory = () => {
-        !history && setIsOpen(true);
-        selectHistory(!history);
-    }   
-    const newChat = () => {
-        navigate("/chat/");
-    }
-    
-    type Menu = {
-        name: string;
-        desc: string;
-        icon: ElementType;
-        func?: () => void;
-    }
-    const menuItems: Menu[] = [
-        {
-            name: "New Chat",
-            desc: "Start a new conversation",
-            icon: ChatTeardropText,
-            func: newChat,
-        },
-        {
-            name: "Search",
-            desc: "Search through your conversations",
-            icon: MagnifyingGlass,
-            func: () => { setSearchActive(!searchActive); !searchActive && setIsOpen(true);}
-        },
-        {
-            name: "History",
-            desc: "View your previous conversations",
-            icon: ClockCounterClockwise,
-            func: toggleHistory,
-        },
-    ];
+  const [showHistory, setShowHistory] = useState(false)
+  const navigate = useNavigate()
 
-    const search = (query : string) => {
-        selectHistory(true);
-        const items = document.querySelectorAll('.historyItem');
-        const result = Array.from(items).forEach(item => {
-            const matches = item.textContent.toLowerCase().includes(query.toLowerCase());
-            (item as HTMLElement).style.display = matches ? '' : 'none';
-        }
-        );
-    }
+  const menuItems: MenuItem[] = [
+    {
+      name: "New Chat",
+      desc: "Start a new conversation",
+      icon: ChatTeardropText,
+      func: () => navigate("/chat/"),
+    },
+    {
+      name: "History",
+      desc: "View your previous conversations",
+      icon: ClockCounterClockwise,
+      func: () => setShowHistory(v => !v),
+    },
+  ]
 
-    useEffect(() => {
-        !isOpen && selectHistory(false);
-        !isOpen && setSearchActive(false);
-    }, [isOpen])
+  useEffect(() => {
+    if (!isOpen) setShowHistory(false)
+  }, [isOpen])
 
-    return (
-        <main className={isOpen ? "sidebar sidebar--open" : "sidebar sidebar--closed"}>
-            <section>
-                <ul>
-                    {
-                    menuItems.map(item => {
-                        const Icon = item.icon;
-                        const Func = item.func;
-                        return (
-                        <li onClick={Func} key={item.name} title={item.desc}>
-                        <Icon size={28}/> 
-                        <span className='sidebar-item-name'>{item.name}</span>
-                        </li>
-                    )})
-                    }
-                    { searchActive &&
-                    (<input type="text" onChange={(e) => {search(e.target.value)}} placeholder='Find your chat' className='searchBox'/>)
-                    }
-                    { history &&
-                        <History/>
-                    }
-                </ul>
-            </section>
-        </main>
-    )
+  const handleClick = (item: MenuItem) => {
+    if (!isOpen) setIsOpen(true)
+    item.func()
+  }
+
+  return (
+    <main className={isOpen ? "sidebar sidebar--open" : "sidebar sidebar--closed"}>
+      <nav className="sidebarNav">
+        {menuItems.map(item => {
+          const Icon = item.icon
+          return (
+            <button
+              className="sidebarAction"
+              onClick={() => handleClick(item)}
+              key={item.name}
+              title={item.desc}
+              aria-label={item.name}
+            >
+              <Icon size={28}/>
+              <span className='sidebar-item-name'>{item.name}</span>
+            </button>
+          )
+        })}
+      </nav>
+      {showHistory && <History/>}
+    </main>
+  )
 }

@@ -2,23 +2,23 @@ import '../css/sidebar.css';
 import { SidebarIcon, SidebarSimpleIcon } from '@phosphor-icons/react';
 import { useLocation } from 'react-router-dom';
 
-export default function SidebarToggle ({isOpen, setIsOpen}) {
-    const location = useLocation();
-    const toggleSidebar = () => {
-        setIsOpen(!isOpen);
-    };
+type Props = {
+  isOpen: boolean
+  setIsOpen: (value: boolean) => void
+}
 
-    return (
-        <>
-        { location.pathname.startsWith("/chat") && 
-        <button onClick={toggleSidebar} className="menu" aria-label="Open menu">
-            {!isOpen ? 
-            (<SidebarSimpleIcon size={22} />)
-            :
-            (<SidebarIcon size={22} />)
-            }
-        </button>
-        }
-        </>
-    )
+export default function SidebarToggle ({isOpen, setIsOpen}: Props) {
+  const location = useLocation()
+  if (!location.pathname.startsWith('/chat')) return null
+
+  return (
+    <button
+      onClick={() => setIsOpen(!isOpen)}
+      className="menu"
+      aria-label={isOpen ? 'Close sidebar' : 'Open sidebar'}
+      aria-expanded={isOpen}
+    >
+      {isOpen ? <SidebarIcon size={22} /> : <SidebarSimpleIcon size={22} />}
+    </button>
+  )
 }

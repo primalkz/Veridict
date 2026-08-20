@@ -3,32 +3,43 @@ import Navbar from './components/Navbar'
 import { Routes, Route } from 'react-router-dom'
 import Chat from './components/Chat'
 
-function App() {
+type Theme = 'dark' | 'light'
 
-  const [isOpen, setIsOpen] = useState(false);
+function useTheme() {
+  const [theme, setTheme] = useState<Theme>(() => {
+    const stored = localStorage.getItem('theme') as Theme | null
+    if (stored === 'dark' || stored === 'light') return stored
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  })
 
   useEffect(() => {
-    const media = window.matchMedia('(prefers-color-scheme: light)');
+    document.documentElement.dataset.theme = theme
+    localStorage.setItem('theme', theme)
+  }, [theme])
 
-    const syncTheme = () => {
-      document.documentElement.dataset.theme = media.matches ? 'light' : 'dark';
-    };
+  useEffect(() => {
+    if (localStorage.getItem('theme')) return
+    const media = window.matchMedia('(prefers-color-scheme: dark)')
+    const sync = () => setTheme(media.matches ? 'dark' : 'light')
+    media.addEventListener('change', sync)
+    return () => media.removeEventListener('change', sync)
+  }, [])
 
-    syncTheme();
-    media.addEventListener('change', syncTheme);
+  const toggle = () => setTheme(t => (t === 'dark' ? 'light' : 'dark'))
+  return { theme, toggle }
+}
 
-    return () => media.removeEventListener('change', syncTheme);
-  }, []);
+export default function App() {
+  const [isOpen, setIsOpen] = useState(false)
+  const { theme, toggle } = useTheme()
 
   return (
     <>
-      <Navbar isOpen={isOpen} setIsOpen={setIsOpen} />
+      <Navbar isOpen={isOpen} setIsOpen={setIsOpen} theme={theme} toggleTheme={toggle} />
       <Routes>
-        <Route path='/chat' element={<Chat isOpen={isOpen} setIsOpen={setIsOpen} />} />
+        <Route path="/chat" element={<Chat isOpen={isOpen} setIsOpen={setIsOpen} />} />
         <Route path="/chat/:uuid" element={<Chat isOpen={isOpen} setIsOpen={setIsOpen} />} />
       </Routes>
     </>
   )
 }
-
-export default App

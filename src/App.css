@@ -1,59 +1,66 @@
 header {
-    position: fixed;
-    top: 0.6em;
-    left: 1%;
-    right: 1%;
-    z-index: 1000;
-    padding: 0.8em 1.2em;
-    
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+	position: fixed;
+	top: var(--space-2);
+	left: 1%;
+	right: 1%;
+	z-index: 1000;
+	padding: var(--space-2) var(--space-4);
 
-    background: var(--glass-bg-strong);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 
-
-    border-radius: 12px;
-	border: 0.5px solid color-mix(in srgb, var(--glass-border) 82%, transparent);
-    box-shadow:
-    inset 0 1px 1px 0.5px color-mix(in srgb, var(--text-main) 14%, transparent),
-    inset 0 0 0 0.7px color-mix(in srgb, var(--glass-highlight) 70%, transparent);
-	backdrop-filter: blur(28px) saturate(170%) brightness(108%);
-	-webkit-backdrop-filter: blur(28px) saturate(170%) brightness(108%);
-
+	background: var(--bg-2);
+	border: 1px solid var(--glass-border);
+	border-radius: var(--radius-lg);
+	box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
 }
 
-#logo{
-    all: unset;
-    cursor: pointer;
-    font-weight: 800;
-    font-size: 15px;
-    letter-spacing: 1.5px;
-    color: var(--text-main);
+#logo {
+	all: unset;
+	cursor: pointer;
+	font-weight: 700;
+	font-size: var(--text-base);
+	letter-spacing: 1.5px;
+	color: var(--text-main);
 }
 
 nav {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
 }
 
-nav a{
-    font-size: inherit;
+nav a {
+	font-size: var(--text-sm);
 }
 
 .themeToggle {
-    all: unset;
-    padding: 0;
-    margin: 0;
-    cursor: pointer;
-    line-height: 0;
-    display: inline-flex;
-    align-items: center;
-    transition: all 0.4s ease-out;
+	all: unset;
+	padding: var(--space-1);
+	cursor: pointer;
+	line-height: 0;
+	display: inline-flex;
+	align-items: center;
+	border-radius: var(--radius-md);
+	transition: background var(--dur-base) var(--ease-out);
 }
 
-.themeToggle:active {
-	transform: scale(0.95);
-	opacity: 0.85;
+.themeToggle:hover {
+	background: color-mix(in srgb, var(--text-main) 8%, transparent);
+}
+
+.menu {
+	all: unset;
+	padding: var(--space-1);
+	cursor: pointer;
+	line-height: 0;
+	display: inline-flex;
+	align-items: center;
+	border-radius: var(--radius-md);
+	transition: background var(--dur-base) var(--ease-out);
+}
+
+.menu:hover {
+	background: color-mix(in srgb, var(--text-main) 8%, transparent);
 }
